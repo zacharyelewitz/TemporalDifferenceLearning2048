@@ -343,11 +343,7 @@ func (b board) getSets() [][][]float32 {
 }
 
 func setIntoTuple(s []float32, V *tuple) float32 {
-	nInf := float32(-math.Pow10(333))
 	val := (*V)[int(s[0])][int(s[1])][int(s[2])][int(s[3])][int(s[4])][int(s[5])]
-	if val == nInf {
-		fmt.Println("set into tuple nInf")
-	}
 	return val
 }
 
@@ -422,13 +418,6 @@ func chooseAction(state board,
 		}
 	}
 
-	if maxVal == nInf {
-		state.print()
-		fmt.Println("choose action - all nInf ", state.done())
-		fmt.Println("max tile: ", state.maxTile())
-		state.print()
-	}
-
 	return action
 }
 
@@ -449,39 +438,13 @@ func learn(V1 *tuple,
 	nState board,
 	nnState board,
 	lr float32) {
-	nInf := float32(-math.Pow10(333))
 	nAction := chooseAction(nnState, V1, V2, V3, V4)
 	nnnState := nnState
-
-	if nnState.done() {
-		fmt.Println("can't swipe nnState")
-	}
-
 	nReward := nnnState.swipe(nAction)
-
-	// if nnnState.done() {
-	// 	fmt.Println("can't swipe nnnState")
-	// }
-
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			if nnnState[i][j] == nInf {
-				nnnState.print()
-			}
-		}
-	}
 
 	fnnnState := f(nnnState, V1, V2, V3, V4)
 	fnState := f(nState, V1, V2, V3, V4)
 	allSets := nState.getSets()
-
-	if fnnnState == nInf {
-		fmt.Println(" fnnnState Negative Infinity!!!!")
-	}
-
-	if fnState == nInf {
-		fmt.Println(" fnState Negative Infinity!!!!")
-	}
 
 	for _, sc := range allSets {
 		updateTuple(V1, lr, nReward, fnnnState, fnState, sc[0])
