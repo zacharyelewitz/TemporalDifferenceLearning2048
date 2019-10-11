@@ -56,8 +56,49 @@ func TestEmptyTiles(t *testing.T) {
 				if boardVal != 0 {
 					t.Errorf("Nonzero value of %d when there should be a zero value at [%d,%d]", int64(boardVal), i, j)
 				}
+			} else {
+				if boardVal == 0 {
+					t.Errorf("Zero value when value should be 2048 at [%d,%d]", i, j)
+				}
+			}
+
+		}
+	}
+}
+
+func TestAddTile(t *testing.T) {
+
+	// Adding a tile means there is one more non-zero tile on the board
+	var b board
+	r, _ := b.emptyTiles()
+	nonZeroCount := 0
+
+	for i := 0; i < 16; i++ {
+		b.addTile()
+		r, _ = b.emptyTiles()
+		nonZeroCount++
+		if 16-len(r) != nonZeroCount {
+			t.Errorf("%d too many tiles added when addTile method is applied", 16-len(r)-nonZeroCount)
+		}
+	}
+
+	// Added tiles are always a 2 or a 4
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			if b[i][j] != 2 && b[i][j] != 4 {
+				t.Errorf("Tile at [%d,%d] has value %d (not a 2 or a 4)", i, j, int32(b[i][j]))
 			}
 		}
+	}
+}
+
+func TestStartingBoard(t *testing.T) {
+
+	// Starting board exists and has two tiles
+	b := startingBoard()
+	r, _ := b.emptyTiles()
+	if len(r) != 14 {
+		t.Errorf("Starting board should only have 2 tiles, actually has %d", 16-len(r))
 	}
 
 }
