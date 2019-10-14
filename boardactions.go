@@ -12,6 +12,21 @@ import (
 type board [4][4]float32
 type tuple [12][12][12][12][12][12]float32
 
+func makeTestingBoard() board {
+
+	var b board
+	var count float32
+
+	for i := 0; i < 4; i++ {
+		for j := 0; j < 4; j++ {
+			b[i][j] = count
+			count++
+		}
+	}
+
+	return b
+}
+
 func (b board) maxTile() float32 {
 
 	var mt float32
