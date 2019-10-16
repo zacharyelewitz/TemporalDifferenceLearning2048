@@ -1,4 +1,4 @@
-# Reinforcement Learning Agent Playing 2048
+# Training a Reinforcement Learning Agent to Play 2048
 
 I love the sliding block puzzle game [2048](https://2048game.com/). It's fun to see what the largest tile you can get is (my personal best is 16,384), which strategies are most resilient to mistakes, and sometimes it's entertaining to purposefully swipe in the wrong direction to see if you're capable enough to get the board back into good shape.
 
