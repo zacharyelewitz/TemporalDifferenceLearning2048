@@ -12,22 +12,8 @@ import (
 type board [4][4]float32
 type tuple [12][12][12][12][12][12]float32
 
-func makeTestingBoard() board {
-
-	var b board
-	var count float32
-
-	for i := 0; i < 4; i++ {
-		for j := 0; j < 4; j++ {
-			b[i][j] = count
-			count++
-		}
-	}
-
-	return b
-}
-
 func (b board) maxTile() float32 {
+	// Returns the maximum tile on the board
 
 	var mt float32
 
@@ -44,11 +30,11 @@ func (b board) maxTile() float32 {
 }
 
 func (b board) print() {
+	// Visually display the board
 
 	var s string
 	var c string
 
-	// Display board to terminal
 	for i := 0; i < 4; i++ {
 		s = "| "
 		for j := 0; j < 4; j++ {
@@ -65,8 +51,9 @@ func (b board) print() {
 }
 
 func (b board) emptyTiles() ([]int, []int) {
+	// Returns coordinates of the empty tiles in
+	// 2 slices for rows and columns respectively
 
-	// Empty tile coordinates
 	var r []int
 	var c []int
 
@@ -83,6 +70,8 @@ func (b board) emptyTiles() ([]int, []int) {
 }
 
 func (b *board) addTile() {
+	// Add tile to the board
+
 	r, c := (*b).emptyTiles()
 
 	if len(r) > 0 {
@@ -110,6 +99,8 @@ func (b *board) addTile() {
 }
 
 func startingBoard() board {
+	// Create a start board (all tiles empty except for 2)
+
 	var b board
 	b.addTile()
 	b.addTile()
@@ -117,12 +108,12 @@ func startingBoard() board {
 }
 
 func (b board) rotateCopyQuarter() board {
+	// Return a copy of the board rotated clockwise 90 degrees
 
 	var r board
 	var t float32
 	N := 4
 
-	// Rotates clockwise
 	for i := 0; i < N/2; i++ {
 		for j := 1; j <= N-i-1; j++ {
 			t = b[i][j]
@@ -138,15 +129,15 @@ func (b board) rotateCopyQuarter() board {
 }
 
 func (b *board) rotateOriginalQuarter() {
+	// Rotate the board clockwise 90 degrees
 
-	// Rotates clockwise
 	(*b) = b.rotateCopyQuarter()
 
 }
 
 func (b board) rotateCopy(n int) board {
+	// Returns a copy of the board rotated clockwise n*90 degrees
 
-	// Rotates clockwise
 	r := b
 	for i := 0; i < n; i++ {
 		r = r.rotateCopyQuarter()
@@ -156,7 +147,8 @@ func (b board) rotateCopy(n int) board {
 }
 
 func (b *board) rotateOriginal(n int) {
-	// Rotates clockwise
+	// Rotates the board clockwise n*90 degrees
+
 	for i := 0; i < n; i++ {
 		(*b).rotateOriginalQuarter()
 	}
@@ -165,6 +157,9 @@ func (b *board) rotateOriginal(n int) {
 func (b *board) swipe(d int) float32 {
 
 	/*
+		Swipes the board. Returns number of points from swiping.
+		Direction of swipe described below:
+
 		0 - Left
 		1 - Down
 		2 - Right
@@ -184,6 +179,7 @@ func (b *board) swipe(d int) float32 {
 }
 
 func (b *board) swipeLeft() float32 {
+	// Swipes board left - Returns number of points from swipe
 
 	// New points from swipe to add to score
 	var newPoints float32
@@ -244,6 +240,7 @@ func (b *board) swipeLeft() float32 {
 }
 
 func (b board) anyZeros() bool {
+	// Identifies if there are empty spaces on the board
 
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 4; j++ {
@@ -258,6 +255,8 @@ func (b board) anyZeros() bool {
 }
 
 func (b board) ableToSlideHorizontally() bool {
+	// Identifies if any tiles will merge if swiped horizontally
+
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 3; j++ {
 			if b[i][j] == b[i][j+1] {
@@ -270,6 +269,7 @@ func (b board) ableToSlideHorizontally() bool {
 }
 
 func (b board) ableToSlide() bool {
+	// Determines if there are any adjacent tiles with the same value
 
 	if b.ableToSlideHorizontally() {
 		return true
@@ -284,6 +284,9 @@ func (b board) ableToSlide() bool {
 }
 
 func (b board) done() bool {
+	// Determines if there are any more moves that can be made
+	// Game stops when a 2048 tile is achieved
+
 	var n2048 float32 = 2048
 	switch {
 	case b.maxTile() == n2048:
@@ -298,6 +301,8 @@ func (b board) done() bool {
 }
 
 func (b board) exponentBoard() board {
+	// Returns a board where the value of each tile
+	// x is replaced with log2(x)
 
 	var eb board
 
@@ -314,6 +319,8 @@ func (b board) exponentBoard() board {
 }
 
 func (b board) transpose() board {
+	// Returns a transposed board
+
 	var t board
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 4; j++ {
@@ -325,6 +332,8 @@ func (b board) transpose() board {
 }
 
 func (b board) getSets() [][][]float32 {
+	// Returns board values at the relevant tiles for LUTs
+	// Looks over all rotations and transpositions
 
 	var boards []board // slice of board variations
 	var s1, s2, s3, s4 []float32
@@ -358,6 +367,8 @@ func (b board) getSets() [][][]float32 {
 }
 
 func setIntoTuple(s []float32, V *tuple) float32 {
+	// Values for LUTs
+
 	val := (*V)[int(s[0])][int(s[1])][int(s[2])][int(s[3])][int(s[4])][int(s[5])]
 	return val
 }
@@ -367,6 +378,7 @@ func f(state board,
 	V2 *tuple,
 	V3 *tuple,
 	V4 *tuple) float32 {
+	// Get values
 
 	allSets := state.getSets()
 	var score float32
@@ -382,6 +394,8 @@ func f(state board,
 }
 
 func matchingBoards(b1 board, b2 board) bool {
+	// Determines if two boards are identical
+
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 4; j++ {
 			if b1[i][j] != b2[i][j] {
@@ -399,6 +413,7 @@ func chooseAction(state board,
 	V2 *tuple,
 	V3 *tuple,
 	V4 *tuple) int {
+	// Identifies which direction to swipe
 
 	var reward float32
 	var nextState board
@@ -442,6 +457,8 @@ func updateTuple(V *tuple,
 	fnnnState float32,
 	fnState float32,
 	s []float32) {
+	// Update single LUTs
+
 	update := lr * (nReward + fnnnState - fnState)
 	(*V)[int(s[0])][int(s[1])][int(s[2])][int(s[3])][int(s[4])][int(s[5])] = setIntoTuple(s, V) + update
 }
@@ -453,6 +470,8 @@ func learn(V1 *tuple,
 	nState board,
 	nnState board,
 	lr float32) {
+	// Updates all LUTs (learning)
+
 	nAction := chooseAction(nnState, V1, V2, V3, V4)
 	nnnState := nnState
 	nReward := nnnState.swipe(nAction)
@@ -474,6 +493,7 @@ func updateCount(n256 *float32,
 	n1024 *float32,
 	n2048 *float32,
 	maxTile float32) {
+	// Update max tile counts
 
 	if maxTile >= 256 {
 		(*n256)++
@@ -496,6 +516,9 @@ func printStatsResetCountsTime(n256 *float32,
 	q int,
 	start *time.Time,
 	gameNum int) {
+	// Print Statistics from the last batch of games
+	// Reset the clock
+	// Reset counts to zero
 
 	t := time.Now()
 	elapsed := t.Sub(*start)
@@ -515,6 +538,7 @@ func playOneGame(V1 *tuple,
 	V3 *tuple,
 	V4 *tuple,
 	lr float32) float32 {
+	// Play a single game of 2048
 
 	var action int
 	var n2048 float32 = 2048
